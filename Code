@@ -1,0 +1,126 @@
+# This code was written by Summer Morris
+# Email: sdmorris42@tntech.edu
+# ECE 1000 Explorations in ECE Final Project
+# Professor: Dr. Bhattacharya
+# Automatic Plant Watering System
+
+# reference used to demonstrate percent value on OLED- https://electrocredible.com/raspberry-pi-pico-temperature-sensor-tutorial/
+# reference used for wiring pump and relay- https://www.instructables.com/PlantyPi-a-Raspberry-Pi-Pico-Plant-Watering-Device/
+# reference used to turn on pump - https://www.pcbway.com/project/shareproject/Automatic_Plant_Watering_System_using_Raspberry_Pi_Pico.html
+# reference used to control RGB LED's- https://how2electronics.com/controlling-rgb-led-using-raspberry-pi-pico/#google_vignette
+# reference used to show text on OLED- https://www.tomshardware.com/how-to/oled-display-raspberry-pi-pico
+# used Chat GPT as reference for lines 38-40 (change color from 8-bit to 16-bit)
+# reference used to code the moisture sensor- https://github.com/JCWilliams1003/ECE-1000-Spring-2024-Final-Project-Insert-Project-Name/blob/main/Example%20Micropython%20Codes/ECE_1000_Soil_Moisture_Sensor_Example.py
+
+# import items for OLED
+from machine import Pin, I2C
+from ssd1306 import SSD1306_I2C
+import time
+#import items for moisture sensor
+from machine import ADC, Pin
+import utime
+#import for button
+from PicoBreadboard import BUTTON
+#items for RGB LED
+from machine import Pin, PWM
+LEDR = PWM(Pin(2))   # Pin for red LED
+LEDG = PWM(Pin(3)) # Pin for green LED
+LEDB = PWM(Pin(4))  # Pin for blue LED
+
+# Set the frequency for the LEDs
+LEDR.freq(1000)
+LEDG.freq(1000)
+LEDB.freq(1000)
+
+# Function to set the color of the RGB LED
+def LEDCOLOR(R, G, B):
+    # This converts the 8-bit color to 16-bit
+    #This increases the luminosity of the RGB LED's
+    R = int(R / 255 * 65535)
+    G = int(G / 255 * 65535)
+    B = int(B / 255 * 65535)
+    
+    # Set the duty cycle for each LED to control brightness
+    LEDR.duty_u16(R)
+    LEDG.duty_u16(G)
+    LEDB.duty_u16(B)
+#OLED pins
+i2c=I2C(0,sda=Pin(16), scl=Pin(17), freq=400000)
+oled = SSD1306_I2C(128, 64, i2c)
+#pin for relay
+Wpump = Pin(0, mode=Pin.OUT)
+#pin for sensor
+Msensor = ADC(Pin(27))
+#button pin
+BTN1 = BUTTON(18)
+#min and max moisture levels
+maximum_level = 27100
+minimum_level = 57100
+#turn levels into percentage values
+def percent_moisture(level):
+    x1 = minimum_level
+    x2 = maximum_level
+    y1 = 0
+    y2 = 100
+    slope = ((y2 - y1) / (x2 - x1))
+    return int((slope*level) -(slope*minimum_level)+y1)
+#intro text
+oled.text("Automatic Plant", 3, 20)
+oled.show()
+oled.text("Watering System", 2, 50)
+oled.show()
+time.sleep(2)
+#clear OLED
+oled.fill (0)
+oled.show ()
+time.sleep(0.5)
+#read and print mositure level
+while True:
+    level = Msensor.read_u16()
+    level_percent = percent_moisture(level)
+    #show percent on computer
+    print(level_percent)
+    #show percent on OLED
+    oled.text("Moisture Level", 10, 0)
+    oled.show()
+    oled.text(str(int(level_percent)), 50, 20)
+    oled.show()
+    oled.text("%", 80, 20)
+    oled.show()
+    utime.sleep(1)  
+    oled.fill (0)
+    oled.show()
+#turn pump on when water levels are low
+    if percent_moisture(level) <= 30 :
+        Wpump.value(1)
+        LEDCOLOR(255, 0, 0)
+        oled.text("Pump ON", 30, 50)
+        oled.show()
+    #this is the bounds at which the plant is at a optimum moisture level
+    #this was added to save energy and water
+    if 30 < percent_moisture(level) < 40 :
+        if Wpump.value(0):
+            LEDCOLOR(0, 255, 0)
+            oled.text("Pump OFF", 30, 50)
+            oled.show()
+        if Wpump.value(1):
+            LEDCOLOR(255, 0, 0)
+            oled.text("PUMP ON", 30, 50)
+            oled.show
+        #turn off pump once it reaches the optimum mositure level
+    if percent_moisture(level) >= 40 :
+        Wpump.value(0)
+        LEDCOLOR(0, 255, 0)
+        oled.text("Pump OFF", 30, 50)
+        oled.show()
+    #manually turn on pump by pressing button 1 
+    if BTN1.read() == 1:
+        Wpump.value(1)
+        print("manual mode")
+        oled.fill (0)
+        oled.show()
+        oled.text("Manual Mode", 25, 50)
+        oled.show()
+        LEDCOLOR(0, 0, 255)
+        time.sleep(5)
+
