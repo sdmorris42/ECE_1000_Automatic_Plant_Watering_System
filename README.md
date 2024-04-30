@@ -16,4 +16,5 @@ The automatic plant watering system continually monitors the moisture level and 
 * Resistors
   * for the RGB LED
 * Water Pump
-* 9V battery 
+* 9V battery
+ * to power the water pump
