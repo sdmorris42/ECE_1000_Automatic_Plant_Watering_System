@@ -10,3 +10,9 @@ The automatic plant watering system continually monitors the moisture level and 
 ## Materials Used
 * Relay
 * Moisture Sensor
+* Raspberry Pi Pico
+* OLED
+* RGB LED
+* Resistors
+* Water Pump
+* 9V battery 
