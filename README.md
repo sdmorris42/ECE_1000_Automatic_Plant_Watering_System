@@ -8,5 +8,5 @@ It can be difficult to give plants the right amount of water necessary to grow. 
 ## Project Accomplishments
 The automatic plant watering system continually monitors the moisture level and updates the percentage every second. The moisture level, as long as the water pump has sufficient water and power is supplied, will continually stay within the range of approximately 29 percent to 41 percent, when given a minimum moisture level of 30 percent and maximum level of 40 percent. When the moisture level is equal to or below 30 percent, the pump will turn on, the RGB LED will turn red, and the OLED will display the text, "Pump On." When the moisture level is at least 40 percent, the pump will turn off, the RGB LED will turn green, and the OLED will display the text, "Pump Off." While the moisture percentage is between 30 and 40 percent, the pump will remain on or off. When the user presses button 1 on the Raspberry Pi Pico, the pump will turn on, the RGB LED will turn blue, and the OLED will display the text, "Manual Mode." The moisture percentage updates on the system and OLED every second. 
 ## Materials Used
-*Relay
-*Moisture Sensor
+* Relay
+* Moisture Sensor
