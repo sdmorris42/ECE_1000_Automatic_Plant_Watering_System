@@ -1,4 +1,4 @@
-# Automatic Plant Watering System 
+## Automatic Plant Watering System 
 # Project Members
 Summer Morris- Electrical Engineering Major 
 
