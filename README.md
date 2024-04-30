@@ -1,4 +1,4 @@
-# ECE_1000_Automatic_Plant_Watering_System
+# Automatic Plant Watering System Project
 # Project Members
 Summer Morris- Electrical Engineering Major 
 
